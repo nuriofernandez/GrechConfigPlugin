@@ -1,7 +1,9 @@
 package me.nurio.bukkit.configuration.files;
 
 import lombok.Getter;
+import me.nurio.bukkit.configuration.exceptions.ConfigFileOutsidePluginFolderException;
 import me.nurio.bukkit.configuration.parsers.LocationConfigParser;
+import me.nurio.bukkit.configuration.utils.FilePaths;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.Plugin;
@@ -19,12 +21,16 @@ public class GrechConfig implements GrechConfigFile, LocationConfigParser {
     @Getter @NotNull private File configFile;
     @Getter @NotNull private FileConfiguration config;
 
-    public GrechConfig(@NotNull Plugin plugin, String filename) {
+    public GrechConfig(@NotNull Plugin plugin, File file) {
         this.plugin = plugin;
 
         // Map plugin setting file.
-        String configFileName = filename.endsWith(".yml") ? filename : filename + ".yml";
-        this.configFile = new File(plugin.getDataFolder(), configFileName);
+        this.configFile = file;
+
+        // Assert that the provided config file is inside plugin data folder.
+        if (FilePaths.isFileInDirectory(file, plugin.getDataFolder())) {
+            throw new ConfigFileOutsidePluginFolderException(file, plugin);
+        }
 
         // Create default config files or empty ones.
         saveDefaultConfig();
@@ -33,8 +39,16 @@ public class GrechConfig implements GrechConfigFile, LocationConfigParser {
         this.config = YamlConfiguration.loadConfiguration(configFile);
     }
 
+    public GrechConfig(@NotNull Plugin plugin, String filename) {
+        this(plugin, new File(plugin.getDataFolder(), filename.endsWith(".yml") ? filename : filename + ".yml"));
+    }
+
     public GrechConfig(String filename, @NotNull Plugin plugin) {
         this(plugin, filename);
+    }
+
+    public GrechConfig(File file, @NotNull Plugin plugin) {
+        this(plugin, file);
     }
 
     /**
