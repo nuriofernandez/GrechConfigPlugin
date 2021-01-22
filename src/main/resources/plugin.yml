@@ -1,6 +1,6 @@
 main: me.nurio.bukkit.configuration.GrechConfigPlugin
 name: GrechConfigPlugin
-version: '1.0'
+version: '1.1'
 api-version: 1.16
 description: Bukkit plugin that simplifies configuration files usage.
 load: STARTUP
