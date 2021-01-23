@@ -28,7 +28,7 @@ public class GrechConfig implements GrechConfigFile, LocationConfigParser {
         this.configFile = file;
 
         // Assert that the provided config file is inside plugin data folder.
-        if (FilePaths.isFileInDirectory(file, plugin.getDataFolder())) {
+        if (!FilePaths.isFileInDirectory(file, plugin.getDataFolder())) {
             throw new ConfigFileOutsidePluginFolderException(file, plugin);
         }
 
